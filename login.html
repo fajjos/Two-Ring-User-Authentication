@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            margin: 0 auto;
+        }
+
+        label, input {
+            display: block;
+            margin: 10px 0;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #login-status {
+            color: #4caf50;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Login</h1>
+    <form id="login-form">
+        <label for="login-username">Username:</label>
+        <input type="text" id="login-username" required>
+
+        <label for="login-password">Password (Password + OTP):</label>
+        <input type="password" id="login-password" required>
+
+        <button id="send-otp">Send OTP</button>
+
+        <!-- Add the "Login" button here -->
+        <button id="login-button">Login</button>
+
+        <div id="login-status"></div>
+    </form>
+
+    <script>
+        // Simulated OTP generation for login
+        document.getElementById('send-otp').addEventListener('click', function() {
+            const loginUsername = document.getElementById('login-username').value;
+            if (loginUsername) {
+                const loginOtp = Math.floor(1000 + Math.random() * 9000); // Generate a random 4-digit OTP
+                alert(`OTP sent to ${loginUsername}: ${loginOtp}`);
+            } else {
+                alert('Please enter a valid username before generating OTP.');
+            }
+        });
+
+        // Handle the login process
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            if (username && password) {
+                // Here, you would typically validate the username and the combined password + OTP.
+                // For the simulation, we'll simply check if the OTP is valid.
+                const otp = password.slice(-4); // Get the last 4 characters as OTP
+                if (otp.match(/^\d{4}$/)) {
+                    document.getElementById('login-status').innerHTML = 'Login successful!';
+                    window.location.href = 'welcome.html?username=' + username;
+                } else {
+                    document.getElementById('login-status').innerHTML = 'Invalid OTP.';
+                }
+            } else {
+                document.getElementById('login-status').innerHTML = 'Please fill in all the fields.';
+            }
+        });
+    </script>
+</body>
+</html>

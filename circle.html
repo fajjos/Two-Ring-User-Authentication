@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rotating Characters</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            border: 2px solid #333;
+            background-color: #fff;
+            margin: 10px;
+            transition: transform 0.3s;
+        }
+        canvas:hover {
+            transform: scale(1.1);
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="600" height="600"></canvas>
+    <input type="password" id="originalPassword" placeholder="Enter the password">
+    <button id="transformPasswordButton">Transform Password</button>
+    <button id="nextButton">NEXT</button>
+
+    <div id="transformedPassword" style="font-size: 18px; margin: 10px;"></div>
+
+    <script>
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+
+        var characters = "0123456789abcdefghijklmnopqrstuvwxyz";
+        var angleIncrement = (2 * Math.PI) / characters.length;
+        var rotationAngleOuter = 0;
+        var rotationAngleInner = 0;
+        var rotationSpeed = 0.01;
+        var rotateFlag = false;
+        var nextButton = document.getElementById("nextButton");
+
+        
+        nextButton.addEventListener("click", function () {
+            window.location.href = "loginn.html"; // Redirect to the login page
+        });
+
+
+        // function transformPassword(originalPassword) {
+        //     var transformedPassword = "";
+
+        //     for (var i = 0; i < originalPassword.length; i++) {
+        //         var char = originalPassword[i];
+        //         var charIndex = characters.indexOf(char);
+        //         if (charIndex !== -1) {
+        //             // Get the corresponding character from the outer circle based on the index.
+        //             var transformedChar = characters[(charIndex + characters.length / 2) % characters.length];
+        //             transformedPassword += transformedChar;
+        //         } else {
+        //             // If the character is not in the character set, keep it as it is.
+        //             transformedPassword += char;
+        //         }
+        //     }
+
+        //     return transformedPassword;
+        // }
+
+           function transformPassword(originalPassword) {
+            var transformedPassword = "";
+
+            for (var i = 0; i < originalPassword.length; i++) {
+                var char = originalPassword[i];
+                var index = characters.indexOf(char);
+                transformedPassword += characters[(index+7)%characters.length];
+                // var charIndex = characters.indexOf(char);
+                // if (charIndex !== -1) {
+                //     // Get the corresponding character from the outer circle based on the index.
+                //     // var transformedChar = characters[(charIndex + characters.length / 2) % characters.length];
+
+                //     // transformedPassword += transformedChar;
+                // } else {
+                //     // If the character is not in the character set, keep it as it is.
+                //     transformedPassword += char;
+                // }
+            }
+
+            return transformedPassword;
+        }
+
+
+        function rotateCirclesFor3Seconds(callback) {
+            var startTime = Date.now();
+            var duration = 2200; // 3 seconds
+
+            function animate() {
+                var currentTime = Date.now();
+                var elapsed = currentTime - startTime;
+
+                if (elapsed < duration) {
+                    // Continue rotating
+                    rotationAngleOuter -= rotationSpeed;
+                    rotationAngleInner += rotationSpeed;
+                    drawCharacters();
+                    requestAnimationFrame(animate);
+                } else {
+                    // Stop rotating and execute the callback
+                    rotateFlag = false;
+                    drawCharacters();
+                    callback();
+                }
+            }
+
+            rotateFlag = true;
+            animate();
+        }
+
+        function drawCharacters() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            var centerX = canvas.width / 2;
+            var centerY = canvas.height / 2;
+            var radiusOuter = 150;
+            var radiusInner = 100;
+
+            for (var i = 0; i < characters.length; i++) {
+                var char = characters[i];
+                var angleOuter = rotationAngleOuter - i * angleIncrement;
+                var angleInner = rotationAngleInner - i * angleIncrement;
+
+                var xOuter = centerX + radiusOuter * Math.cos(angleOuter);
+                var yOuter = centerY + radiusOuter * Math.sin(angleOuter);
+                var xInner = centerX + radiusInner * Math.cos(angleInner);
+                var yInner = centerY + radiusInner * Math.sin(angleInner);
+
+                ctx.font = "24px Arial";
+                ctx.fillText(char, xOuter - 10, yOuter + 10);
+                ctx.fillText(char, xInner - 10, yInner + 10);
+            }
+
+            if (rotateFlag) {
+                requestAnimationFrame(drawCharacters);
+            }
+        }
+
+        var transformPasswordButton = document.getElementById("transformPasswordButton");
+        var transformedPasswordDiv = document.getElementById("transformedPassword");
+
+        transformPasswordButton.addEventListener("click", function () {
+            rotateCirclesFor3Seconds(function () {
+                // Callback after rotating for 3 seconds
+                var originalPassword = document.getElementById("originalPassword").value;
+                var transformedPassword = transformPassword(originalPassword);
+                localStorage.setItem("transformed", transformPassword);
+
+                // Display masked password (e.g., asterisks) with a tooltip
+                var maskedPassword = '*'.repeat(transformedPassword.length);
+                // transformedPasswordDiv.innerHTML = "Transformed Password: <span class='tooltip'>" + maskedPassword + "<span class='tooltiptext'>" + transformedPassword + "</span></span>";
+            });
+        });
+
+        drawCharacters();
+    </script>
+    <style>
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 160px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</body>
+</html>

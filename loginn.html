@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Login</title>
+    <style>
+                body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgb(0, 0, 0);
+            width: 300px;
+            margin: 0 auto;
+        }
+
+        label, input {
+            display: block;
+            margin: 10px 0;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #ff5900;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #b35c00;
+        }
+
+        #login-status {
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>User Login</h1>
+    <form id="login-form">
+        <label for="login-username">Username:</label>
+        <input type="text" id="login-username" required>
+
+        <label for="login-password">Password (First 4 digits of key + 4 digits of OTP + Remaining key):</label>
+        <input type="password" id="login-password" required>
+
+        <button id="send-otp">Send OTP</button>
+
+        <!-- Add the "Login" button here -->
+        <button id="login-button" type="submit">Login</button>
+
+        <div id="login-status"></div>
+    </form>
+
+    <script>
+        let generatedOTP = '';
+
+        // Simulated OTP generation for login
+        document.getElementById('send-otp').addEventListener('click', function() {
+            const loginUsername = document.getElementById('login-username').value;
+            if (loginUsername) {
+                generatedOTP = Math.floor(1000 + Math.random() * 9000).toString(); // Generate a random 4-digit OTP as a string
+                alert(`OTP sent to ${loginUsername}: ${generatedOTP}`);
+            } else {
+                alert('Please enter a valid username before generating OTP.');
+            }
+        });
+
+        // Handle the login process
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            if (username && password) {
+                // Split the password into components
+                const firstFourDigits = password.slice(0, 4);
+                const enteredOTP = password.slice(4, 8);
+                const remainingPassword = password.slice(8);
+                const completePassword = firstFourDigits + remainingPassword;
+
+                // const storedPassword = localStorage.getItem(username);
+                const transformedPassword = localStorage.getItem("transformed");
+                console.log(transformedPassword);
+
+                // console.log(storedPassword);
+
+                if(completePassword != transformedPassword){
+                    alert('You have entered the wrong password');
+                    return;
+                }
+
+                // Validate the OTP
+                if (enteredOTP === generatedOTP) {
+                    document.getElementById('login-status').innerHTML = 'Login successful!';
+                    window.location.href = 'welcome.html?username=' + username;
+                } else {
+                    document.getElementById('login-status').innerHTML = 'Invalid OTP.';
+                }
+            } else {
+                document.getElementById('login-status').innerHTML = 'Please fill in all the fields.';
+            }
+        });
+    </script>
+</body>
+</html>

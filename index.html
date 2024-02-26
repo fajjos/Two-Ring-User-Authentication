@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Registration</title>
+    <style>
+         body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgb(0, 0, 0);
+            width: 300px;
+            margin: 0 auto;
+        }
+
+        label, input {
+            display: block;
+            margin: 10px 0;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .password-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .password-input {
+            flex: 1;
+        }
+
+        .password-toggle {
+            cursor: pointer;
+        }
+
+        button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #ff0000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #b30000;
+        }
+
+        #registration-status {
+            color: #4caf50;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Registration</h1>
+    <form id="registration-form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" required>
+
+        <label for="password">Password:</label>
+        <div class="password-container">
+            <input type="password" id="password" class="password-input" required>
+            <span class="password-toggle" id="password-toggle">&#x1F441;</span> <!-- Eye icon: &#x1F441; (you can replace with a different icon) -->
+        </div>
+
+        <label for="confirm-password">Confirm Password:</label>
+        <input type="password" id="confirm-password" required>
+
+        <label for="phone">Phone Number:</label>
+        <input type="number" id="phone" required>
+        <button id="generate-otp">Generate OTP</button>
+
+        <label for="otp">OTP:</label>
+        <input type="text" id="otp" required>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <div id="registration-status"></div>
+
+    <button id="login-button">Login</button>
+
+    <script>
+        // Simulated OTP generation for registration
+        document.getElementById('generate-otp').addEventListener('click', function() {
+            const phone = document.getElementById('phone').value;
+            if (phone) {
+                const otp = Math.floor(100000 + Math.random() * 900000); // Generate a random 4-digit OTP
+                alert(`OTP sent to ${phone}: ${otp}`);
+            } else {
+                alert('Please enter a valid phone number before generating OTP.');
+            }
+        });
+
+        // Toggle password visibility
+        const passwordInput = document.getElementById('password');
+        const passwordToggle = document.getElementById('password-toggle');
+        passwordToggle.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        });
+
+        // Handle the registration process
+        document.getElementById('registration-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const otp = document.getElementById('otp').value;
+
+            if (username && password && confirmPassword && otp) {
+                if (password === confirmPassword) {
+                    localStorage.setItem(username,password);
+                    document.getElementById('registration-status').innerHTML = 'Registration successful!';
+                    // Redirect to the login page after registration
+                    window.location.href = 'circle.html'; // Replace 'login.html' with the actual login page URL
+                } else {
+                    document.getElementById('registration-status').innerHTML = 'Passwords do not match.';
+                }
+            } else {
+                document.getElementById('registration-status').innerHTML = 'Please fill in all the fields.';
+            }
+        });
+
+        // Redirect to the login page when the login button is clicked
+        document.getElementById('login-button').addEventListener('click', function() {
+            window.location.href = 'loginn.html'; // Replace 'login.html' with the actual login page URL
+        });
+    </script>
+    <!-- Add the following script after your existing JavaScript code -->
+<script>
+    // Function to check password strength
+    function checkPasswordStrength() {
+        const password = document.getElementById('password').value;
+        const strengthMeter = document.getElementById('password-strength-meter');
+        const strengthText = document.getElementById('password-strength-text');
+
+        // Define your own password strength criteria here
+        // For example, you can check for length, character types, etc.
+        // This is a basic example; you can customize it further.
+        let strength = 0;
+
+        if (password.length >= 8) {
+            strength += 1;
+        }
+        if (password.match(/[a-z]/)) {
+            strength += 1;
+        }
+        if (password.match(/[A-Z]/)) {
+            strength += 1;
+        }
+        if (password.match(/[0-9]/)) {
+            strength += 1;
+        }
+
+        // Update the strength meter and text
+        switch (strength) {
+            case 0:
+                strengthMeter.style.width = '0%';
+                strengthText.textContent = 'Weak';
+                break;
+            case 1:
+                strengthMeter.style.width = '25%';
+                strengthText.textContent = 'Weak';
+                break;
+            case 2:
+                strengthMeter.style.width = '50%';
+                strengthText.textContent = 'Moderate';
+                break;
+            case 3:
+                strengthMeter.style.width = '75%';
+                strengthText.textContent = 'Strong';
+                break;
+            case 4:
+                strengthMeter.style.width = '100%';
+                strengthText.textContent = 'Very Strong';
+                break;
+        }
+    }
+
+    // Add an event listener to check password strength as the user types
+    document.getElementById('password').addEventListener('input', checkPasswordStrength);
+</script>
+<script>
+    const typingData = {
+      keyPresses: [],
+      timeStamps: [],
+    };
+  
+    document.getElementById('password').addEventListener('keydown', function (e) {
+      typingData.keyPresses.push(e.key);
+      typingData.timeStamps.push(Date.now());
+    });
+  
+    // Function to calculate typing speed
+    function calculateTypingSpeed() {
+      if (typingData.timeStamps.length < 2) {
+        return null; // Not enough data for calculation
+      }
+  
+      const startTime = typingData.timeStamps[0];
+      const endTime = typingData.timeStamps[typingData.timeStamps.length - 1];
+      const timeDifference = (endTime - startTime) / 1000; // Convert to seconds
+  
+      const keyPressCount = typingData.keyPresses.length;
+  
+      return keyPressCount / timeDifference; // Keypresses per second
+    }
+  
+    // Function to check typing speed
+    function checkTypingBehavior() {
+      const typingSpeed = calculateTypingSpeed();
+      if (typingSpeed !== null && typingSpeed >= 0.3) {
+        // Adjust the threshold value as needed
+        return true; // Typing behavior is normal
+      }
+      return false; // Typing behavior is suspicious
+    }
+  </script>
+
+  
+
+
+
+<!-- Add the following HTML to display the password strength meter -->
+<div class="password-container">
+    <input type="password" id="password" class="password-input" required>
+    <span class="password-toggle" id="password-toggle">&#x1F441;</span>
+</div>
+<div id="password-strength-meter-container">
+    <div id="password-strength-meter"></div>
+    <p id="password-strength-text">Password Strength</p>
+</div>
+
+</body>
+</html>
